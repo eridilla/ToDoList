@@ -1,22 +1,61 @@
-import React, { Component } from 'react';
-import Button from '@mui/material/Button';
+import React, { Component, useState } from "react";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 
-class Counter extends Component {
-    state = { 
-        id: this.props.id,
-        name: 'Name',
-        content: 'Content'
-    }
-    
-    render() { 
-        return (
-            <div>
-                <h4>{this.state.name} (Id: {this.props.id})</h4>
-                <p>{this.state.content}</p>
-                <Button onClick={() => this.props.onDelete(this.props.id)} variant="contained" color="error">Delete</Button>
-            </div>
-        );
-    }
+function Task(props) {
+    // const id = useState(props.task.id);
+    const id = props.task.id;
+    let [name, setName] = useState(props.task.name);
+    let [content, setContent] = useState(props.task.content);
+
+    const handleEditName = () => {
+        setName("New Name");
+    };
+
+    const handleEditContent = () => {
+        setContent("New Content");
+    };
+
+    // console.log(props);
+
+    return (
+        <Box>
+            <Grid container spacing={2} paddingTop={2}>
+                <Grid item xs={3}>
+                    <Typography variant="h5" component="h2">
+                        {name} (Id: {id})
+                    </Typography>
+                </Grid>
+                <Grid item xs={3}>
+                    <Button
+                        onClick={() => props.onDelete(id)}
+                        variant="contained"
+                        color="error"
+                    >
+                        Delete
+                    </Button>
+                    <Button
+                        onClick={handleEditName}
+                        variant="contained"
+                        color="warning"
+                    >
+                        Change name
+                    </Button>
+                    <Button
+                        onClick={handleEditContent}
+                        variant="contained"
+                        color="warning"
+                    >
+                        Change content
+                    </Button>
+                </Grid>
+            </Grid>
+
+            <p>{content}</p>
+        </Box>
+    );
 }
- 
-export default Counter;
+
+export default Task;

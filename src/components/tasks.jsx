@@ -1,37 +1,64 @@
-import React, { Component } from 'react';
-import { Button } from '@mui/material';
-import Task from "./task"
+import React, { Component, useEffect, useState } from "react";
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
+import Task from "./Task";
+import AddTask from "./AddTaskModal";
 
-class Tasks extends Component {
-    state = { 
-        tasks: [],
-        currId: 0
-    } 
+const Tasks = () => {
+    let [tasks, handleChange] = useState([]);
+    let currId = 0;
 
-    handleDelete = taskId => {
-        const tasks = this.state.tasks.filter(t => t.id !== taskId);
-        this.setState({ tasks });
-    }
+    useEffect(() => {
+        console.log("useeffect");
+    }, [tasks]);
 
-    handleAdd = () => {
-        let tasks = this.state.tasks;
-        const newTask = {
-            id: this.state.currId
+    handleChange = (typeOfChange, taskId, taskName, taskContent) => {
+        if (typeOfChange === 0) {
+            handleDelete(taskId);
+        } else if (typeOfChange === 1) {
+            handleAdd(taskName, taskContent);
         }
+    };
+
+    const handleDelete = (taskId) => {
+        console.log("Delete handler", taskId);
+
+        const tasks = tasks.filter((t) => t.id !== taskId);
+    };
+
+    const handleAdd = (taskName, taskContent) => {
+        const newTask = {
+            id: currId,
+            name: taskName,
+            content: taskContent,
+        };
 
         tasks.push(newTask);
-        this.setState({tasks});
-        this.setState({currId: this.state.currId + 1});
-    }
+        currId = currId + 1;
+    };
 
-    render() { 
-        return (
-            <div>
-                <Button variant="contained" color="success" onClick={this.handleAdd}>Add Task</Button>
-                {this.state.tasks.map(task => <Task key={task.id} id={task.id} onDelete={this.handleDelete}/>)}
-            </div>
-        );
-    }
-}
- 
+    return (
+        <Paper elevation={3}>
+            <Box padding={5}>
+                <Box component="span" paddingRight={2}>
+                    Active tasks: {tasks.length}
+                </Box>
+                <AddTask
+                    onAdd={() =>
+                        handleChange(1, 1, "Task Name", "Task Content")
+                    }
+                ></AddTask>
+                {tasks.map((task) => (
+                    <Task
+                        key={task.id}
+                        task={task}
+                        onDelete={() => this.handleChange(0, task.id)}
+                    />
+                ))}
+            </Box>
+        </Paper>
+    );
+};
+
 export default Tasks;
