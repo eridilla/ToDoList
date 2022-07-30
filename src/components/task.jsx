@@ -10,15 +10,10 @@ function Task(props) {
     let [name, setName] = useState(props.task.name);
     let [content, setContent] = useState(props.task.content);
 
-    const handleEditName = () => {
+    const handleEdit = () => {
         setName("New Name");
-    };
-
-    const handleEditContent = () => {
         setContent("New Content");
     };
-
-    // console.log(props);
 
     return (
         <Box>
@@ -37,18 +32,11 @@ function Task(props) {
                         Delete
                     </Button>
                     <Button
-                        onClick={handleEditName}
+                        onClick={handleEdit}
                         variant="contained"
                         color="warning"
                     >
-                        Change name
-                    </Button>
-                    <Button
-                        onClick={handleEditContent}
-                        variant="contained"
-                        color="warning"
-                    >
-                        Change content
+                        Edit
                     </Button>
                 </Grid>
             </Grid>

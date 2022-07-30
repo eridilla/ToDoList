@@ -6,25 +6,11 @@ import Task from "./Task";
 import AddTask from "./AddTaskModal";
 
 const Tasks = () => {
-    let [tasks, handleChange] = useState([]);
-    let currId = 0;
-
-    useEffect(() => {
-        console.log("useeffect");
-    }, [tasks]);
-
-    handleChange = (typeOfChange, taskId, taskName, taskContent) => {
-        if (typeOfChange === 0) {
-            handleDelete(taskId);
-        } else if (typeOfChange === 1) {
-            handleAdd(taskName, taskContent);
-        }
-    };
+    let [tasks, setTasks] = useState([]);
+    let [currId, setCurrId] = useState(0);
 
     const handleDelete = (taskId) => {
-        console.log("Delete handler", taskId);
-
-        const tasks = tasks.filter((t) => t.id !== taskId);
+        setTasks(tasks.filter((t) => t.id !== taskId));
     };
 
     const handleAdd = (taskName, taskContent) => {
@@ -35,7 +21,8 @@ const Tasks = () => {
         };
 
         tasks.push(newTask);
-        currId = currId + 1;
+        setTasks(tasks);
+        setCurrId(currId + 1);
     };
 
     return (
@@ -45,15 +32,13 @@ const Tasks = () => {
                     Active tasks: {tasks.length}
                 </Box>
                 <AddTask
-                    onAdd={() =>
-                        handleChange(1, 1, "Task Name", "Task Content")
-                    }
+                    onAdd={() => handleAdd("Task Name", "Task Content")}
                 ></AddTask>
                 {tasks.map((task) => (
                     <Task
                         key={task.id}
                         task={task}
-                        onDelete={() => this.handleChange(0, task.id)}
+                        onDelete={() => handleDelete(task.id)}
                     />
                 ))}
             </Box>
