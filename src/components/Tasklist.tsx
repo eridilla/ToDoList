@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
@@ -16,6 +16,12 @@ type Task = {
     isCompleted: boolean;
 };
 
+// type TasklistProps = {
+//     id: number;
+//     tasks: Task[];
+//     onAdd: (title: string, content: string, deadline: Date | null) => void;
+// };
+
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
     ref
@@ -23,7 +29,10 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const Tasks = () => {
+// const Tasklist = (props: TasklistProps) => {
+const Tasklist = () => {
+    // const [tasklistName, setTasklistName] = useState("Task list " + props.id);
+    // const [tasks, setTasks] = useState<Task[]>(props.tasks);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [currId, setCurrId] = useState(0);
     const [openDeleteSnackbar, setOpenDeleteSnackbar] = useState(false);
@@ -39,6 +48,8 @@ const Tasks = () => {
         taskContent: string,
         taskDeadline: Date | null
     ) => {
+        // props.onAdd(taskTitle, taskContent, taskDeadline);
+
         const newTask: Task = {
             id: currId,
             title: taskTitle,
@@ -63,18 +74,6 @@ const Tasks = () => {
         setOpenDeleteSnackbar(false);
     };
 
-    // function countCompletedTasks(): number {
-    //     let completed: number = 0;
-
-    //     tasks.forEach((t) => {
-    //         if (t.isCompleted) {
-    //             completed = completed + 1;
-    //         }
-    //     });
-
-    //     return completed;
-    // }
-
     const handleCompletion = (taskStatus: boolean) => {
         if (taskStatus) {
             setCompletedTasks(completedTasks + 1);
@@ -88,7 +87,8 @@ const Tasks = () => {
             <Paper elevation={3} sx={{ backgroundColor: "#FFF6BA" }}>
                 <Box padding={5}>
                     <Typography component="h2" variant="h4">
-                        Task list name
+                        {/* {tasklistName} */}
+                        Task list
                     </Typography>
                     <Box component="span" paddingRight={2}>
                         Active tasks: {tasks.length}
@@ -127,4 +127,4 @@ const Tasks = () => {
     );
 };
 
-export default Tasks;
+export default Tasklist;
