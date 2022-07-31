@@ -16,8 +16,10 @@ type TaskProps = {
         title: string;
         content: string;
         deadline: Date | null;
+        isCompleted: boolean;
     };
     onDelete: () => void;
+    onComplete: (taskStatus: boolean) => void;
 };
 
 function Task(props: TaskProps) {
@@ -26,7 +28,7 @@ function Task(props: TaskProps) {
     const [title, setTitle] = useState(props.task.title);
     const [content, setContent] = useState(props.task.content);
     const [deadline, setDeadline] = useState(props.task.deadline);
-    const [isCompleted, setIsCompleted] = useState(false);
+    const [isCompleted, setIsCompleted] = useState(props.task.isCompleted);
 
     const handleEdit = (
         newTitle: string,
@@ -50,7 +52,13 @@ function Task(props: TaskProps) {
                     sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
                     color="success"
                     onChange={() => {
-                        setIsCompleted(!isCompleted);
+                        if (!isCompleted) {
+                            props.onComplete(true);
+                            setIsCompleted(!isCompleted);
+                        } else {
+                            props.onComplete(false);
+                            setIsCompleted(!isCompleted);
+                        }
                     }}
                 />
 

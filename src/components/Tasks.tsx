@@ -13,6 +13,7 @@ type Task = {
     title: string;
     content: string;
     deadline: Date | null;
+    isCompleted: boolean;
 };
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
@@ -26,6 +27,7 @@ const Tasks = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [currId, setCurrId] = useState(0);
     const [openDeleteSnackbar, setOpenDeleteSnackbar] = useState(false);
+    const [completedTasks, setCompletedTasks] = useState(0);
 
     const handleDelete = (taskId: number) => {
         setTasks(tasks.filter((t) => t.id !== taskId));
@@ -42,6 +44,7 @@ const Tasks = () => {
             title: taskTitle,
             content: taskContent,
             deadline: taskDeadline,
+            isCompleted: false,
         };
 
         tasks.push(newTask);
@@ -60,6 +63,26 @@ const Tasks = () => {
         setOpenDeleteSnackbar(false);
     };
 
+    // function countCompletedTasks(): number {
+    //     let completed: number = 0;
+
+    //     tasks.forEach((t) => {
+    //         if (t.isCompleted) {
+    //             completed = completed + 1;
+    //         }
+    //     });
+
+    //     return completed;
+    // }
+
+    const handleCompletion = (taskStatus: boolean) => {
+        if (taskStatus) {
+            setCompletedTasks(completedTasks + 1);
+        } else {
+            setCompletedTasks(completedTasks - 1);
+        }
+    };
+
     return (
         <React.Fragment>
             <Paper elevation={3} sx={{ backgroundColor: "#FFF6BA" }}>
@@ -70,6 +93,9 @@ const Tasks = () => {
                     <Box component="span" paddingRight={2}>
                         Active tasks: {tasks.length}
                     </Box>
+                    <Box component="span" paddingRight={2}>
+                        Completed tasks: {completedTasks}
+                    </Box>
                     <AddTask onAdd={handleAdd}></AddTask>
                     {tasks.map((task) => (
                         <Box key={task.id}>
@@ -77,6 +103,7 @@ const Tasks = () => {
                                 key={task.id}
                                 task={task}
                                 onDelete={() => handleDelete(task.id)}
+                                onComplete={handleCompletion}
                             />
                             <hr></hr>
                         </Box>
