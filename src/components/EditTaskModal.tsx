@@ -14,13 +14,18 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import FormHelperText from "@mui/material/FormHelperText";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import EditIcon from "@mui/icons-material/Edit";
+import IconButton from "@mui/material/IconButton";
+import Stack from "@mui/material/Stack";
 
 const style = {
     position: "absolute",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 400,
     bgcolor: "background.paper",
     boxShadow: 24,
     p: 4,
@@ -29,7 +34,8 @@ const style = {
 type EditTaskProps = {
     formerTitle: string;
     formerContent: string;
-    onEdit: (title: string, content: string) => void;
+    formerDeadline: Date | null;
+    onEdit: (title: string, content: string, deadline: Date | null) => void;
 };
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
@@ -44,19 +50,21 @@ const AddTask = (props: EditTaskProps) => {
     const [isRequiredEmpty, setIsRequiredEmpty] = useState(false);
     const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
     const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+    const [deadline, setDeadline] = useState<Date | null>(null);
 
     const formik = useFormik({
         initialValues: {
             title: props.formerTitle,
             content: props.formerContent,
+            deadline: props.formerDeadline,
         },
         onSubmit: (values) => {
             if (values.title.length === 0) {
                 setIsRequiredEmpty(true);
             } else {
                 setIsRequiredEmpty(false);
-                props.onEdit(values.title, values.content);
-                handleClose(true, values.title, values.content);
+                props.onEdit(values.title, values.content, deadline);
+                handleClose(true, values.title, values.content, deadline);
             }
         },
     });
@@ -68,7 +76,8 @@ const AddTask = (props: EditTaskProps) => {
     const handleClose = (
         isEdited: boolean,
         newTitle: string,
-        newContent: string
+        newContent: string,
+        newDeadline: Date | null
     ) => {
         setIsRequiredEmpty(false);
         setOpen(false);
@@ -76,9 +85,11 @@ const AddTask = (props: EditTaskProps) => {
         if (isEdited) {
             formik.values.title = newTitle;
             formik.values.content = newContent;
+            formik.values.deadline = newDeadline;
         } else {
             formik.values.title = props.formerTitle;
             formik.values.content = props.formerContent;
+            formik.values.deadline = props.formerDeadline;
         }
     };
 
@@ -106,68 +117,113 @@ const AddTask = (props: EditTaskProps) => {
 
     return (
         <div>
-            <Button variant="contained" color="warning" onClick={handleOpen}>
-                Edit task
-            </Button>
+            <IconButton color="warning" onClick={handleOpen}>
+                <EditIcon />
+            </IconButton>
             <Modal
                 open={open}
-                onClose={() => handleClose(false, "", "")}
+                onClose={() => handleClose(false, "", "", null)}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
                 <Paper elevation={5} sx={style}>
-                    <Typography
-                        id="modal-modal-title"
-                        variant="h6"
-                        component="h2"
+                    <Stack
+                        direction="column"
+                        justifyContent="center"
+                        alignItems="center"
+                        spacing={2}
                     >
-                        Edit task
-                    </Typography>
-                    <form onSubmit={formik.handleSubmit}>
-                        <FormControl variant="standard">
-                            <InputLabel
-                                error={isRequiredEmpty}
-                                htmlFor="component-simple"
-                            >
-                                Title
-                            </InputLabel>
-                            <Input
-                                error={isRequiredEmpty}
-                                id="title"
-                                name="title"
-                                type="text"
-                                value={formik.values.title}
-                                onChange={formik.handleChange}
-                            />
-                            <FormHelperText
-                                error
-                                sx={isRequiredEmpty ? {} : { display: "none" }}
-                            >
-                                Required
-                            </FormHelperText>
-                        </FormControl>
-                        <FormControl>
-                            <InputLabel htmlFor="component-outlined">
-                                Content
-                            </InputLabel>
-                            <OutlinedInput
-                                id="content"
-                                name="content"
-                                type="text"
-                                value={formik.values.content}
-                                onChange={formik.handleChange}
-                                label="Content"
-                            />
-                        </FormControl>
-                        <Button
-                            onClick={handleClick}
-                            type="submit"
-                            color="success"
-                            variant="contained"
+                        <Typography
+                            id="modal-modal-title"
+                            variant="h6"
+                            component="h2"
                         >
-                            Edit
-                        </Button>
-                    </form>
+                            Edit task
+                        </Typography>
+                        <form onSubmit={formik.handleSubmit}>
+                            <Stack
+                                direction="column"
+                                justifyContent="center"
+                                alignItems="center"
+                                spacing={2}
+                                sx={{ width: "400px" }}
+                            >
+                                <FormControl
+                                    variant="standard"
+                                    sx={{ width: "100%" }}
+                                >
+                                    <InputLabel
+                                        error={isRequiredEmpty}
+                                        htmlFor="component-simple"
+                                    >
+                                        Title
+                                    </InputLabel>
+                                    <Input
+                                        error={isRequiredEmpty}
+                                        id="title"
+                                        name="title"
+                                        type="text"
+                                        value={formik.values.title}
+                                        onChange={formik.handleChange}
+                                    />
+                                    <FormHelperText
+                                        error
+                                        sx={
+                                            isRequiredEmpty
+                                                ? {}
+                                                : { display: "none" }
+                                        }
+                                    >
+                                        Required
+                                    </FormHelperText>
+                                </FormControl>
+                                <FormControl sx={{ width: "100%" }}>
+                                    <InputLabel htmlFor="component-outlined">
+                                        Content
+                                    </InputLabel>
+                                    <OutlinedInput
+                                        id="content"
+                                        name="content"
+                                        type="text"
+                                        value={formik.values.content}
+                                        onChange={formik.handleChange}
+                                        label="Content"
+                                        multiline
+                                        rows={5}
+                                    />
+                                </FormControl>
+                                <LocalizationProvider
+                                    dateAdapter={AdapterDateFns}
+                                    sx={{ width: "100%" }}
+                                >
+                                    <DatePicker
+                                        openTo="month"
+                                        views={["year", "month", "day"]}
+                                        label="Deadline"
+                                        value={formik.values.deadline}
+                                        onChange={(newValue) => {
+                                            formik.values.deadline = newValue;
+                                            setDeadline(newValue);
+                                        }}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                helperText={null}
+                                            />
+                                        )}
+                                    />
+                                </LocalizationProvider>
+                                <Button
+                                    onClick={handleClick}
+                                    type="submit"
+                                    color="success"
+                                    variant="contained"
+                                >
+                                    Edit
+                                </Button>
+                            </Stack>
+                        </form>
+                    </Stack>
                 </Paper>
             </Modal>
             <Snackbar

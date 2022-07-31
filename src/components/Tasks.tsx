@@ -6,11 +6,13 @@ import Task from "./Task";
 import AddTask from "./AddTaskModal";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
+import { Typography } from "@mui/material";
 
 type Task = {
     id: number;
     title: string;
     content: string;
+    deadline: Date | null;
 };
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
@@ -30,11 +32,16 @@ const Tasks = () => {
         setOpenDeleteSnackbar(true);
     };
 
-    const handleAdd = (taskTitle: string, taskContent: string) => {
+    const handleAdd = (
+        taskTitle: string,
+        taskContent: string,
+        taskDeadline: Date | null
+    ) => {
         const newTask: Task = {
             id: currId,
             title: taskTitle,
             content: taskContent,
+            deadline: taskDeadline,
         };
 
         tasks.push(newTask);
@@ -55,18 +62,24 @@ const Tasks = () => {
 
     return (
         <React.Fragment>
-            <Paper elevation={3}>
+            <Paper elevation={3} sx={{ backgroundColor: "#FFF6BA" }}>
                 <Box padding={5}>
+                    <Typography component="h2" variant="h4">
+                        Task list name
+                    </Typography>
                     <Box component="span" paddingRight={2}>
                         Active tasks: {tasks.length}
                     </Box>
                     <AddTask onAdd={handleAdd}></AddTask>
                     {tasks.map((task) => (
-                        <Task
-                            key={task.id}
-                            task={task}
-                            onDelete={() => handleDelete(task.id)}
-                        />
+                        <Box key={task.id}>
+                            <Task
+                                key={task.id}
+                                task={task}
+                                onDelete={() => handleDelete(task.id)}
+                            />
+                            <hr></hr>
+                        </Box>
                     ))}
                 </Box>
             </Paper>
