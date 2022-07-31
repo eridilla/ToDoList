@@ -12,6 +12,8 @@ import InputLabel from "@mui/material/InputLabel";
 import { useFormik } from "formik";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import FormHelperText from "@mui/material/FormHelperText";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert, { AlertProps } from "@mui/material/Alert";
 
 const style = {
     position: "absolute",
@@ -28,33 +30,65 @@ type AddTaskProps = {
     onAdd: (title: string, content: string) => void;
 };
 
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+    props,
+    ref
+) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 const AddTask = (props: AddTaskProps) => {
     const [open, setOpen] = useState(false);
+    const [isRequiredEmpty, setIsRequiredEmpty] = useState(false);
+    const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
+    const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+
     const formik = useFormik({
         initialValues: {
             title: "",
             content: "",
         },
         onSubmit: (values) => {
-            // if (values.title.length === 0) {
-            //     document.getElementById("title").error = true;
-            //     ;
-            // }
-
-            props.onAdd(values.title, values.content);
-            handleClose();
+            if (values.title.length === 0) {
+                setIsRequiredEmpty(true);
+            } else {
+                setIsRequiredEmpty(false);
+                props.onAdd(values.title, values.content);
+                handleClose();
+            }
         },
     });
 
     const handleOpen = () => setOpen(true);
 
     const handleClose = () => {
+        setIsRequiredEmpty(false);
         setOpen(false);
         formik.values.title = "";
         formik.values.content = "";
     };
 
-    // console.log(props);
+    const handleClick = () => {
+        if (formik.values.title) {
+            setOpenErrorSnackbar(false);
+            setOpenSuccessSnackbar(true);
+        } else {
+            setOpenSuccessSnackbar(false);
+            setOpenErrorSnackbar(true);
+        }
+    };
+
+    const handleCloseSnackbar = (
+        event?: React.SyntheticEvent | Event,
+        reason?: string
+    ) => {
+        if (reason === "clickaway") {
+            return;
+        }
+
+        setOpenSuccessSnackbar(false);
+        setOpenErrorSnackbar(false);
+    };
 
     return (
         <div>
@@ -77,12 +111,14 @@ const AddTask = (props: AddTaskProps) => {
                     </Typography>
                     <form onSubmit={formik.handleSubmit}>
                         <FormControl variant="standard">
-                            <InputLabel htmlFor="component-simple">
+                            <InputLabel
+                                error={isRequiredEmpty}
+                                htmlFor="component-simple"
+                            >
                                 Title
                             </InputLabel>
                             <Input
-                                required
-                                error={formik.values.title === ""}
+                                error={isRequiredEmpty}
                                 id="title"
                                 name="title"
                                 type="text"
@@ -91,11 +127,7 @@ const AddTask = (props: AddTaskProps) => {
                             />
                             <FormHelperText
                                 error
-                                sx={
-                                    formik.values.title === ""
-                                        ? {}
-                                        : { display: "none" }
-                                }
+                                sx={isRequiredEmpty ? {} : { display: "none" }}
                             >
                                 Required
                             </FormHelperText>
@@ -114,6 +146,7 @@ const AddTask = (props: AddTaskProps) => {
                             />
                         </FormControl>
                         <Button
+                            onClick={handleClick}
                             type="submit"
                             color="success"
                             variant="contained"
@@ -123,6 +156,32 @@ const AddTask = (props: AddTaskProps) => {
                     </form>
                 </Paper>
             </Modal>
+            <Snackbar
+                open={openSuccessSnackbar}
+                autoHideDuration={3000}
+                onClose={handleCloseSnackbar}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity="success"
+                    sx={{ width: "100%" }}
+                >
+                    Task added successfully!
+                </Alert>
+            </Snackbar>
+            <Snackbar
+                open={openErrorSnackbar}
+                autoHideDuration={3000}
+                onClose={handleCloseSnackbar}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity="error"
+                    sx={{ width: "100%" }}
+                >
+                    Title cannot be empty!
+                </Alert>
+            </Snackbar>
         </div>
     );
 };

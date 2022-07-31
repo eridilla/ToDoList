@@ -12,6 +12,8 @@ import InputLabel from "@mui/material/InputLabel";
 import { useFormik } from "formik";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import FormHelperText from "@mui/material/FormHelperText";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert, { AlertProps } from "@mui/material/Alert";
 
 const style = {
     position: "absolute",
@@ -30,28 +32,77 @@ type EditTaskProps = {
     onEdit: (title: string, content: string) => void;
 };
 
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+    props,
+    ref
+) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 const AddTask = (props: EditTaskProps) => {
     const [open, setOpen] = useState(false);
+    const [isRequiredEmpty, setIsRequiredEmpty] = useState(false);
+    const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
+    const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+
     const formik = useFormik({
         initialValues: {
             title: props.formerTitle,
             content: props.formerContent,
         },
         onSubmit: (values) => {
-            props.onEdit(values.title, values.content);
-            handleClose();
+            if (values.title.length === 0) {
+                setIsRequiredEmpty(true);
+            } else {
+                setIsRequiredEmpty(false);
+                props.onEdit(values.title, values.content);
+                handleClose(true, values.title, values.content);
+            }
         },
     });
 
-    const handleOpen = () => setOpen(true);
-
-    const handleClose = () => {
-        setOpen(false);
-        formik.values.title = "";
-        formik.values.content = "";
+    const handleOpen = () => {
+        setOpen(true);
     };
 
-    // console.log(props);
+    const handleClose = (
+        isEdited: boolean,
+        newTitle: string,
+        newContent: string
+    ) => {
+        setIsRequiredEmpty(false);
+        setOpen(false);
+
+        if (isEdited) {
+            formik.values.title = newTitle;
+            formik.values.content = newContent;
+        } else {
+            formik.values.title = props.formerTitle;
+            formik.values.content = props.formerContent;
+        }
+    };
+
+    const handleClick = () => {
+        if (formik.values.title) {
+            setOpenErrorSnackbar(false);
+            setOpenSuccessSnackbar(true);
+        } else {
+            setOpenSuccessSnackbar(false);
+            setOpenErrorSnackbar(true);
+        }
+    };
+
+    const handleCloseSnackbar = (
+        event?: React.SyntheticEvent | Event,
+        reason?: string
+    ) => {
+        if (reason === "clickaway") {
+            return;
+        }
+
+        setOpenSuccessSnackbar(false);
+        setOpenErrorSnackbar(false);
+    };
 
     return (
         <div>
@@ -60,7 +111,7 @@ const AddTask = (props: EditTaskProps) => {
             </Button>
             <Modal
                 open={open}
-                onClose={handleClose}
+                onClose={() => handleClose(false, "", "")}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
@@ -74,12 +125,14 @@ const AddTask = (props: EditTaskProps) => {
                     </Typography>
                     <form onSubmit={formik.handleSubmit}>
                         <FormControl variant="standard">
-                            <InputLabel htmlFor="component-simple">
+                            <InputLabel
+                                error={isRequiredEmpty}
+                                htmlFor="component-simple"
+                            >
                                 Title
                             </InputLabel>
                             <Input
-                                required
-                                error={formik.values.title === ""}
+                                error={isRequiredEmpty}
                                 id="title"
                                 name="title"
                                 type="text"
@@ -88,11 +141,7 @@ const AddTask = (props: EditTaskProps) => {
                             />
                             <FormHelperText
                                 error
-                                sx={
-                                    formik.values.title === ""
-                                        ? {}
-                                        : { display: "none" }
-                                }
+                                sx={isRequiredEmpty ? {} : { display: "none" }}
                             >
                                 Required
                             </FormHelperText>
@@ -111,15 +160,42 @@ const AddTask = (props: EditTaskProps) => {
                             />
                         </FormControl>
                         <Button
+                            onClick={handleClick}
                             type="submit"
                             color="success"
                             variant="contained"
                         >
-                            Add
+                            Edit
                         </Button>
                     </form>
                 </Paper>
             </Modal>
+            <Snackbar
+                open={openSuccessSnackbar}
+                autoHideDuration={3000}
+                onClose={handleCloseSnackbar}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity="success"
+                    sx={{ width: "100%" }}
+                >
+                    Task edited successfully!
+                </Alert>
+            </Snackbar>
+            <Snackbar
+                open={openErrorSnackbar}
+                autoHideDuration={3000}
+                onClose={handleCloseSnackbar}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity="error"
+                    sx={{ width: "100%" }}
+                >
+                    Title cannot be empty!
+                </Alert>
+            </Snackbar>
         </div>
     );
 };
