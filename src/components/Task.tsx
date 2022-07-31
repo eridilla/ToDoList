@@ -3,6 +3,7 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
+import EditTask from "./EditTaskModal"
 
 type TaskProps = {
     task: {
@@ -19,20 +20,20 @@ function Task(props: TaskProps) {
     const [title, setTitle] = useState(props.task.title);
     const [content, setContent] = useState(props.task.content);
 
-    const handleEdit = () => {
-        setTitle("New Title");
-        setContent("New Content");
+    const handleEdit = (newTitle: string, newContent: string) => {
+        setTitle(newTitle);
+        setContent(newContent);
     };
 
     return (
         <Box>
             <Grid container spacing={2} paddingTop={2}>
-                <Grid item xs={3}>
+                <Grid item xs={4}>
                     <Typography variant="h5" component="h2">
                         {title} (Id: {id})
                     </Typography>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={4}>
                     <Button
                         onClick={() => props.onDelete()}
                         variant="contained"
@@ -40,13 +41,7 @@ function Task(props: TaskProps) {
                     >
                         Delete
                     </Button>
-                    <Button
-                        onClick={handleEdit}
-                        variant="contained"
-                        color="warning"
-                    >
-                        Edit
-                    </Button>
+                    <EditTask formerTitle={title} formerContent={content} onEdit={handleEdit}></EditTask>
                 </Grid>
             </Grid>
 

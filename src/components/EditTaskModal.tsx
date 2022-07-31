@@ -7,7 +7,7 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import FormControl from "@mui/material/FormControl";
-import { Hidden, Input } from "@mui/material";
+import { Input } from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import { useFormik } from "formik";
 import OutlinedInput from "@mui/material/OutlinedInput";
@@ -24,24 +24,21 @@ const style = {
     p: 4,
 };
 
-type AddTaskProps = {
-    onAdd: (title: string, content: string) => void;
+type EditTaskProps = {
+    formerTitle: string;
+    formerContent: string;
+    onEdit: (title: string, content: string) => void;
 };
 
-const AddTask = (props: AddTaskProps) => {
+const AddTask = (props: EditTaskProps) => {
     const [open, setOpen] = useState(false);
     const formik = useFormik({
         initialValues: {
-            title: "",
-            content: "",
+            title: props.formerTitle,
+            content: props.formerContent,
         },
         onSubmit: (values) => {
-            // if (values.title.length === 0) {
-            //     document.getElementById("title").error = true;
-            //     ;
-            // }
-
-            props.onAdd(values.title, values.content);
+            props.onEdit(values.title, values.content);
             handleClose();
         },
     });
@@ -58,8 +55,8 @@ const AddTask = (props: AddTaskProps) => {
 
     return (
         <div>
-            <Button variant="contained" color="success" onClick={handleOpen}>
-                Add task
+            <Button variant="contained" color="warning" onClick={handleOpen}>
+                Edit task
             </Button>
             <Modal
                 open={open}
@@ -73,7 +70,7 @@ const AddTask = (props: AddTaskProps) => {
                         variant="h6"
                         component="h2"
                     >
-                        Add a new task
+                        Edit task
                     </Typography>
                     <form onSubmit={formik.handleSubmit}>
                         <FormControl variant="standard">
