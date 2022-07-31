@@ -1,10 +1,19 @@
-import React, { Component, useState } from "react";
+import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 
-function Task(props) {
+type TaskProps = {
+    task: {
+        id: number,
+        title: string,
+        content: string
+    },
+    onDelete: () => void
+}
+
+function Task(props: TaskProps) {
     // const id = useState(props.task.id);
     const id = props.task.id;
     const [title, setTitle] = useState(props.task.title);

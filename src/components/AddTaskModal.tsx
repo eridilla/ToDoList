@@ -23,7 +23,11 @@ const style = {
     p: 4,
 };
 
-const AddTask = (props) => {
+type AddTaskProps = {
+    onAdd: (title: string, content: string) => void
+}
+
+const AddTask = (props: AddTaskProps) => {
     const [open, setOpen] = useState(false);
     const formik = useFormik({
         initialValues: {

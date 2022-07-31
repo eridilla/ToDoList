@@ -5,16 +5,22 @@ import Button from "@mui/material/Button";
 import Task from "./Task";
 import AddTask from "./AddTaskModal";
 
+type Task = {
+    id: number,
+    title: string,
+    content: string
+}
+
 const Tasks = () => {
-    const [tasks, setTasks] = useState([]);
+    const [tasks, setTasks] = useState<Task[]>([]);
     const [currId, setCurrId] = useState(0);
 
-    const handleDelete = (taskId) => {
+    const handleDelete = (taskId: number) => {
         setTasks(tasks.filter((t) => t.id !== taskId));
     };
 
-    const handleAdd = (taskTitle, taskContent) => {
-        const newTask = {
+    const handleAdd = (taskTitle: string, taskContent: string) => {
+        const newTask: Task = {
             id: currId,
             title: taskTitle,
             content: taskContent,
