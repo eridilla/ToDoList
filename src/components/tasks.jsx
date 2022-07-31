@@ -6,17 +6,17 @@ import Task from "./Task";
 import AddTask from "./AddTaskModal";
 
 const Tasks = () => {
-    let [tasks, setTasks] = useState([]);
-    let [currId, setCurrId] = useState(0);
+    const [tasks, setTasks] = useState([]);
+    const [currId, setCurrId] = useState(0);
 
     const handleDelete = (taskId) => {
         setTasks(tasks.filter((t) => t.id !== taskId));
     };
 
-    const handleAdd = (taskName, taskContent) => {
+    const handleAdd = (taskTitle, taskContent) => {
         const newTask = {
             id: currId,
-            name: taskName,
+            title: taskTitle,
             content: taskContent,
         };
 
@@ -31,9 +31,7 @@ const Tasks = () => {
                 <Box component="span" paddingRight={2}>
                     Active tasks: {tasks.length}
                 </Box>
-                <AddTask
-                    onAdd={() => handleAdd("Task Name", "Task Content")}
-                ></AddTask>
+                <AddTask onAdd={handleAdd}></AddTask>
                 {tasks.map((task) => (
                     <Task
                         key={task.id}

@@ -1,9 +1,16 @@
 import * as React from "react";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
+import TextField from "@mui/material/TextField";
+import FormControl from "@mui/material/FormControl";
+import { Input } from "@mui/material";
+import InputLabel from "@mui/material/InputLabel";
+import { useFormik } from "formik";
+import OutlinedInput from "@mui/material/OutlinedInput";
 
 const style = {
     position: "absolute",
@@ -17,9 +24,27 @@ const style = {
 };
 
 const AddTask = (props) => {
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
+    const formik = useFormik({
+        initialValues: {
+            title: "",
+            content: "",
+        },
+        onSubmit: (values) => {
+            props.onAdd(values.title, values.content);
+            handleClose();
+        },
+    });
+
     const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+
+    const handleClose = () => {
+        setOpen(false);
+        formik.values.title = "";
+        formik.values.content = "";
+    };
+
+    // console.log(props);
 
     return (
         <div>
@@ -40,16 +65,40 @@ const AddTask = (props) => {
                     >
                         Add a new task
                     </Typography>
-                    <Button
-                        onClick={() => {
-                            props.onAdd("Task name", "Task content");
-                            handleClose();
-                        }}
-                        variant="contained"
-                        color="success"
-                    >
-                        Add
-                    </Button>
+                    <form onSubmit={formik.handleSubmit}>
+                        <FormControl variant="standard">
+                            <InputLabel htmlFor="component-simple">
+                                Title
+                            </InputLabel>
+                            <Input
+                                id="title"
+                                name="title"
+                                type="text"
+                                value={formik.values.title}
+                                onChange={formik.handleChange}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <InputLabel htmlFor="component-outlined">
+                                Content
+                            </InputLabel>
+                            <OutlinedInput
+                                id="content"
+                                name="content"
+                                type="text"
+                                value={formik.values.content}
+                                onChange={formik.handleChange}
+                                label="Content"
+                            />
+                        </FormControl>
+                        <Button
+                            type="submit"
+                            color="success"
+                            variant="contained"
+                        >
+                            Add
+                        </Button>
+                    </form>
                 </Paper>
             </Modal>
         </div>

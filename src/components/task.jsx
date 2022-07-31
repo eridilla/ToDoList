@@ -7,11 +7,11 @@ import Typography from "@mui/material/Typography";
 function Task(props) {
     // const id = useState(props.task.id);
     const id = props.task.id;
-    let [name, setName] = useState(props.task.name);
-    let [content, setContent] = useState(props.task.content);
+    const [title, setTitle] = useState(props.task.title);
+    const [content, setContent] = useState(props.task.content);
 
     const handleEdit = () => {
-        setName("New Name");
+        setTitle("New Title");
         setContent("New Content");
     };
 
@@ -20,12 +20,12 @@ function Task(props) {
             <Grid container spacing={2} paddingTop={2}>
                 <Grid item xs={3}>
                     <Typography variant="h5" component="h2">
-                        {name} (Id: {id})
+                        {title} (Id: {id})
                     </Typography>
                 </Grid>
                 <Grid item xs={3}>
                     <Button
-                        onClick={() => props.onDelete(id)}
+                        onClick={() => props.onDelete()}
                         variant="contained"
                         color="error"
                     >
