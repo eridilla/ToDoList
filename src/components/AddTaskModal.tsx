@@ -14,7 +14,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import FormHelperText from "@mui/material/FormHelperText";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import IconButton from "@mui/material/IconButton";
@@ -178,11 +178,10 @@ const AddTask = (props: AddTaskProps) => {
                                 </FormControl>
                                 <LocalizationProvider
                                     dateAdapter={AdapterDateFns}
-                                    // sx={{ width: "100%" }}
                                 >
-                                    <DatePicker
-                                        openTo="month"
-                                        views={["year", "month", "day"]}
+                                    <DateTimePicker
+                                        // openTo="day"
+                                        // views={["year", "day"]}
                                         label="Deadline"
                                         value={formik.values.deadline}
                                         onChange={(newValue) => {

@@ -8,6 +8,7 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Stack from "@mui/material/Stack";
+import Checkbox from "@mui/material/Checkbox";
 
 type TaskProps = {
     task: {
@@ -25,6 +26,7 @@ function Task(props: TaskProps) {
     const [title, setTitle] = useState(props.task.title);
     const [content, setContent] = useState(props.task.content);
     const [deadline, setDeadline] = useState(props.task.deadline);
+    const [isCompleted, setIsCompleted] = useState(false);
 
     const handleEdit = (
         newTitle: string,
@@ -40,49 +42,103 @@ function Task(props: TaskProps) {
         <Box>
             <Stack
                 direction="row"
-                justifyContent="space-between"
+                justifyContent="start"
                 alignItems="center"
                 spacing={0}
             >
-                <Stack
-                    direction="row"
-                    justifyContent="flex-start"
-                    alignItems="center"
-                    spacing={1}
-                >
-                    <Typography variant="h5" component="h2">
-                        {title}
-                    </Typography>
-                    <Typography
-                        variant="subtitle2"
-                        component="h6"
-                        marginLeft="10px"
+                <Checkbox
+                    sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                    color="success"
+                    onChange={() => {
+                        setIsCompleted(!isCompleted);
+                    }}
+                />
+
+                <Box sx={{ width: "100%" }}>
+                    <Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={0}
                     >
-                        Id: {id}
+                        <Stack
+                            direction="row"
+                            justifyContent="flex-start"
+                            alignItems="center"
+                            spacing={1}
+                        >
+                            <Typography
+                                variant="h5"
+                                component="h2"
+                                sx={
+                                    isCompleted
+                                        ? {
+                                              textDecoration: "line-through",
+                                              opacity: "50%",
+                                          }
+                                        : {}
+                                }
+                            >
+                                {title}
+                            </Typography>
+                            <Typography
+                                variant="subtitle2"
+                                component="h6"
+                                marginLeft="10px"
+                                sx={{ opacity: "50%" }}
+                            >
+                                Id: {id}
+                            </Typography>
+                        </Stack>
+                        <ButtonGroup
+                            variant="contained"
+                            aria-label="outlined primary button group"
+                            sx={{ backgroundColor: "white" }}
+                        >
+                            <EditTask
+                                formerTitle={title}
+                                formerContent={content}
+                                formerDeadline={deadline}
+                                onEdit={handleEdit}
+                            ></EditTask>
+                            <IconButton
+                                color="error"
+                                onClick={() => props.onDelete()}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </ButtonGroup>
+                    </Stack>
+                    <Typography
+                        component="p"
+                        variant="body1"
+                        sx={
+                            isCompleted
+                                ? {
+                                      textDecoration: "line-through",
+                                      opacity: "50%",
+                                  }
+                                : {}
+                        }
+                    >
+                        {content}
                     </Typography>
-                </Stack>
-                <ButtonGroup
-                    variant="contained"
-                    aria-label="outlined primary button group"
-                    sx={{ backgroundColor: "white" }}
-                >
-                    <EditTask
-                        formerTitle={title}
-                        formerContent={content}
-                        formerDeadline={deadline}
-                        onEdit={handleEdit}
-                    ></EditTask>
-                    <IconButton color="error" onClick={() => props.onDelete()}>
-                        <DeleteIcon />
-                    </IconButton>
-                </ButtonGroup>
+                    <Box sx={deadline === null ? { display: "none" } : {}}>
+                        <Typography
+                            sx={
+                                isCompleted
+                                    ? {
+                                          textDecoration: "line-through",
+                                          opacity: "50%",
+                                      }
+                                    : {}
+                            }
+                        >
+                            Deadline: {deadline?.toLocaleString()}
+                        </Typography>
+                    </Box>
+                </Box>
             </Stack>
-            <Typography component="p" variant="body1">
-                {content}
-            </Typography>
-            <Typography sx={deadline === null ? { display: "none" } : {}}>
-                Deadline: {deadline?.toDateString()}
-            </Typography>
         </Box>
     );
 }

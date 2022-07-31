@@ -14,7 +14,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import FormHelperText from "@mui/material/FormHelperText";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import EditIcon from "@mui/icons-material/Edit";
@@ -63,8 +63,17 @@ const AddTask = (props: EditTaskProps) => {
                 setIsRequiredEmpty(true);
             } else {
                 setIsRequiredEmpty(false);
-                props.onEdit(values.title, values.content, deadline);
-                handleClose(true, values.title, values.content, deadline);
+                props.onEdit(
+                    values.title,
+                    values.content,
+                    formik.values.deadline
+                );
+                handleClose(
+                    true,
+                    values.title,
+                    values.content,
+                    formik.values.deadline
+                );
             }
         },
     });
@@ -196,9 +205,7 @@ const AddTask = (props: EditTaskProps) => {
                                     dateAdapter={AdapterDateFns}
                                     sx={{ width: "100%" }}
                                 >
-                                    <DatePicker
-                                        openTo="month"
-                                        views={["year", "month", "day"]}
+                                    <DateTimePicker
                                         label="Deadline"
                                         value={formik.values.deadline}
                                         onChange={(newValue) => {
