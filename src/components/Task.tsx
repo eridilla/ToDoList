@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import EditTask from "./EditTaskModal";
 import ButtonGroup from "@mui/material/ButtonGroup";
@@ -52,14 +50,19 @@ function Task(props: TaskProps) {
                     sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
                     color="success"
                     onChange={() => {
-                        if (!isCompleted) {
+                        // setIsCompleted(!isCompleted);
+                        // props.onComplete(isCompleted);
+                        if (isCompleted === false) {
                             props.onComplete(true);
-                            setIsCompleted(!isCompleted);
+                            setIsCompleted(true);
                         } else {
                             props.onComplete(false);
-                            setIsCompleted(!isCompleted);
+                            setIsCompleted(false);
                         }
+
+                        // console.log(!isCompleted);
                     }}
+                    checked={isCompleted}
                 />
 
                 <Box sx={{ width: "100%" }}>
