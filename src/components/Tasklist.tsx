@@ -90,6 +90,8 @@ const Tasklist = () => {
 
         tasks.push(newTask);
         shownTasks.push(newTask);
+        console.log(tasks);
+        console.log(shownTasks);
         // setTasks(tasks);
         // setShownTasks(tasks);
         setCurrId(currId + 1);
@@ -166,10 +168,10 @@ const Tasklist = () => {
             case Filter.Reset:
                 setFilterCompletedIsSet(true);
                 setFilterNotCompletedIsSet(true);
-                setShownTasks(tasks);
+                setShownTasks(tasks.slice());
                 break;
             default:
-                setShownTasks(tasks);
+                setShownTasks(tasks.slice());
         }
     };
 
