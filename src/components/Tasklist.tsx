@@ -10,8 +10,6 @@ import Stack from "@mui/material/Stack";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import { TextField } from "@mui/material";
-import { Input } from "@mui/material";
 import { useFormik } from "formik";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
@@ -19,7 +17,7 @@ import InputBase from "@mui/material/InputBase";
 import Divider from "@mui/material/Divider";
 import ClearIcon from "@mui/icons-material/Clear";
 
-type Task = {
+type TaskObj = {
     id: number;
     title: string;
     content: string;
@@ -50,8 +48,8 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 const Tasklist = () => {
     // const [tasklistName, setTasklistName] = useState("Task list " + props.id);
     // const [tasks, setTasks] = useState<Task[]>(props.tasks);
-    const [tasks, setTasks] = useState<Task[]>([]);
-    const [shownTasks, setShownTasks] = useState<Task[]>([]);
+    const [tasks, setTasks] = useState<TaskObj[]>([]);
+    const [shownTasks, setShownTasks] = useState<TaskObj[]>([]);
     const [currId, setCurrId] = useState(0);
     const [openDeleteSnackbar, setOpenDeleteSnackbar] = useState(false);
     const [completedTasks, setCompletedTasks] = useState(0);
@@ -80,7 +78,7 @@ const Tasklist = () => {
     ) => {
         // props.onAdd(taskTitle, taskContent, taskDeadline);
 
-        const newTask: Task = {
+        const newTask: TaskObj = {
             id: currId,
             title: taskTitle,
             content: taskContent,
@@ -90,10 +88,6 @@ const Tasklist = () => {
 
         tasks.push(newTask);
         shownTasks.push(newTask);
-        console.log(tasks);
-        console.log(shownTasks);
-        // setTasks(tasks);
-        // setShownTasks(tasks);
         setCurrId(currId + 1);
     };
 
@@ -168,10 +162,16 @@ const Tasklist = () => {
             case Filter.Reset:
                 setFilterCompletedIsSet(true);
                 setFilterNotCompletedIsSet(true);
+
+                let shit = tasks.slice();
+
+                console.log(shit);
+
                 setShownTasks(tasks.slice());
                 break;
             default:
                 setShownTasks(tasks.slice());
+                break;
         }
     };
 
