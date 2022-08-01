@@ -18,6 +18,12 @@ type TaskProps = {
     };
     onDelete: () => void;
     onComplete: (taskStatus: boolean) => void;
+    onEdit: (
+        newTitle: string,
+        newContent: string,
+        newDeadline: Date | null,
+        taskId: number
+    ) => void;
 };
 
 function Task(props: TaskProps) {
@@ -28,15 +34,15 @@ function Task(props: TaskProps) {
     const [deadline, setDeadline] = useState(props.task.deadline);
     const [isCompleted, setIsCompleted] = useState(props.task.isCompleted);
 
-    const handleEdit = (
-        newTitle: string,
-        newContent: string,
-        newDeadline: Date | null
-    ) => {
-        setTitle(newTitle);
-        setContent(newContent);
-        setDeadline(newDeadline);
-    };
+    // const handleEdit = (
+    //     newTitle: string,
+    //     newContent: string,
+    //     newDeadline: Date | null
+    // ) => {
+    //     setTitle(newTitle);
+    //     setContent(newContent);
+    //     setDeadline(newDeadline);
+    // };
 
     return (
         <Box>
@@ -110,7 +116,27 @@ function Task(props: TaskProps) {
                                 formerTitle={title}
                                 formerContent={content}
                                 formerDeadline={deadline}
-                                onEdit={handleEdit}
+                                onEdit={(
+                                    newTitle: string,
+                                    newContent: string,
+                                    newDeadline: Date | null
+                                ) => {
+                                    setTitle(newTitle);
+                                    setContent(newContent);
+                                    setDeadline(newDeadline);
+                                    console.log(
+                                        newTitle,
+                                        newContent,
+                                        newDeadline,
+                                        id
+                                    );
+                                    props.onEdit(
+                                        newTitle,
+                                        newContent,
+                                        newDeadline,
+                                        id
+                                    );
+                                }}
                             ></EditTask>
                             <IconButton
                                 color="error"

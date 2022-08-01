@@ -10,6 +10,14 @@ import Stack from "@mui/material/Stack";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import { TextField } from "@mui/material";
+import { Input } from "@mui/material";
+import { useFormik } from "formik";
+import IconButton from "@mui/material/IconButton";
+import SearchIcon from "@mui/icons-material/Search";
+import InputBase from "@mui/material/InputBase";
+import Divider from "@mui/material/Divider";
+import ClearIcon from "@mui/icons-material/Clear";
 
 type Task = {
     id: number;
@@ -22,6 +30,7 @@ type Task = {
 enum Filter {
     Completed,
     NotCompleted,
+    Reset,
 }
 
 // type TasklistProps = {
@@ -46,6 +55,9 @@ const Tasklist = () => {
     const [currId, setCurrId] = useState(0);
     const [openDeleteSnackbar, setOpenDeleteSnackbar] = useState(false);
     const [completedTasks, setCompletedTasks] = useState(0);
+    const [filterCompletedIsSet, setFilterCompletedIsSet] = useState(true);
+    const [filterNotCompletedIsSet, setFilterNotCompletedIsSet] =
+        useState(true);
 
     const handleDelete = (taskId: number) => {
         // console.log(tasks.filter((t) => t.id === taskId)[0].isCompleted);
@@ -94,6 +106,17 @@ const Tasklist = () => {
         setOpenDeleteSnackbar(false);
     };
 
+    const handleEdit = (
+        newTitle: string,
+        newContent: string,
+        newDeadline: Date | null,
+        taskId: number
+    ) => {
+        tasks.filter((t) => t.id === taskId)[0].title = newTitle;
+        tasks.filter((t) => t.id === taskId)[0].content = newContent;
+        tasks.filter((t) => t.id === taskId)[0].deadline = newDeadline;
+    };
+
     const handleCompletion = (taskStatus: boolean, id: number) => {
         if (!taskStatus) {
             tasks.filter((t) => t.id === id)[0].isCompleted = true;
@@ -107,6 +130,8 @@ const Tasklist = () => {
     const handleFilter = (filter: Filter) => {
         switch (filter) {
             case Filter.Completed:
+                setFilterCompletedIsSet(!filterCompletedIsSet);
+                console.log(tasks);
                 if (
                     shownTasks.filter((t) => t.isCompleted === true).length > 0
                 ) {
@@ -122,6 +147,8 @@ const Tasklist = () => {
                 }
                 break;
             case Filter.NotCompleted:
+                setFilterNotCompletedIsSet(!filterNotCompletedIsSet);
+
                 if (
                     shownTasks.filter((t) => t.isCompleted !== true).length > 0
                 ) {
@@ -136,10 +163,28 @@ const Tasklist = () => {
                     );
                 }
                 break;
+            case Filter.Reset:
+                setFilterCompletedIsSet(true);
+                setFilterNotCompletedIsSet(true);
+                setShownTasks(tasks);
+                break;
             default:
                 setShownTasks(tasks);
         }
     };
+
+    const formik = useFormik({
+        initialValues: {
+            searchText: "",
+        },
+        onSubmit: (values) => {
+            handleFilter(Filter.Reset);
+            setShownTasks(tasks.filter((t) => t.title === values.searchText));
+        },
+        onReset: () => {
+            handleFilter(Filter.Reset);
+        },
+    });
 
     return (
         <React.Fragment>
@@ -172,7 +217,7 @@ const Tasklist = () => {
                                                 handleFilter(Filter.Completed)
                                             }
                                             color="success"
-                                            defaultChecked
+                                            checked={filterCompletedIsSet}
                                         />
                                     }
                                     label="Completed"
@@ -186,11 +231,53 @@ const Tasklist = () => {
                                                 )
                                             }
                                             color="success"
-                                            defaultChecked
+                                            checked={filterNotCompletedIsSet}
                                         />
                                     }
                                     label="Not Completed"
                                 />
+
+                                <Paper
+                                    component="form"
+                                    onSubmit={formik.handleSubmit}
+                                    sx={{
+                                        p: "2px 4px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <IconButton
+                                        color="default"
+                                        sx={{ p: "10px" }}
+                                        aria-label="clearSearch"
+                                        onClick={() => {
+                                            formik.resetForm();
+                                        }}
+                                    >
+                                        <ClearIcon fontSize="small" />
+                                    </IconButton>
+                                    <InputBase
+                                        required
+                                        sx={{ ml: 1, flex: 1 }}
+                                        id="searchText"
+                                        name="searchText"
+                                        type="text"
+                                        value={formik.values.searchText}
+                                        onChange={formik.handleChange}
+                                    />
+                                    <Divider
+                                        sx={{ height: 28, m: 0.5 }}
+                                        orientation="vertical"
+                                    />
+                                    <IconButton
+                                        type="submit"
+                                        color="default"
+                                        sx={{ p: "10px" }}
+                                        aria-label="submitSearch"
+                                    >
+                                        <SearchIcon />
+                                    </IconButton>
+                                </Paper>
                             </Stack>
                         </FormGroup>
                     </Stack>
@@ -212,6 +299,19 @@ const Tasklist = () => {
                                 onDelete={() => handleDelete(task.id)}
                                 onComplete={() =>
                                     handleCompletion(task.isCompleted, task.id)
+                                }
+                                onEdit={(
+                                    newTitle: string,
+                                    newContent: string,
+                                    newDeadline: Date | null,
+                                    taskId: number
+                                ) =>
+                                    handleEdit(
+                                        newTitle,
+                                        newContent,
+                                        newDeadline,
+                                        taskId
+                                    )
                                 }
                             />
                             <hr></hr>

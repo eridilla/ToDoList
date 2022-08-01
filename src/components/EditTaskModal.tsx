@@ -45,7 +45,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const AddTask = (props: EditTaskProps) => {
+const EditTask = (props: EditTaskProps) => {
     const [open, setOpen] = useState(false);
     const [isRequiredEmpty, setIsRequiredEmpty] = useState(false);
     const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
@@ -263,4 +263,4 @@ const AddTask = (props: EditTaskProps) => {
     );
 };
 
-export default AddTask;
+export default EditTask;
